@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Aria2 Bridge",
+  "version": "1.7",
+  "description": "把 Firefox 的下载交给本机 aria2（JSON-RPC）：支持 cookie 转发、右键发送、排除规则和设置页。",
+  "permissions": [
+    "downloads",
+    "notifications",
+    "storage",
+    "cookies",
+    "contextMenus",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:6800/*",
+    "http://localhost:6800/*"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "commands": {
+    "toggle-capture": {
+      "description": "切换：接管浏览器下载"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{91ad8691-3c13-4a45-ad44-4a5badc293d6}",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  }
+}

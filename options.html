@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Aria2 Bridge 设置</title>
+  <style>
+    body { font: menu; margin: 12px 14px 24px; max-width: 760px; }
+    h2 { font-size: 1.05em; margin: 0 0 4px; }
+    label.field { display: block; margin: 12px 0 4px; font-weight: 600; }
+    input[type="text"], input[type="password"], input[type="number"], textarea {
+      width: 100%; box-sizing: border-box; padding: 4px 6px; font: inherit;
+    }
+    textarea { height: 76px; font-family: monospace; font-size: 0.95em; }
+    .hint { font-size: 0.88em; opacity: 0.75; margin-top: 3px; }
+    .checks { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 12px; }
+    .checks label { font-weight: 400; }
+    .buttons { margin-top: 18px; display: flex; align-items: center; gap: 10px; }
+    button { padding: 5px 14px; font: inherit; }
+    #status { font-size: 0.92em; }
+    fieldset { border: 1px solid rgba(128,128,128,.4); border-radius: 4px; margin: 18px 0 0; padding: 8px 12px 14px; }
+    legend { padding: 0 6px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h2>Aria2 Bridge 设置</h2>
+  <div class="hint">改完点“保存”，配置立即生效（不需要重启浏览器）。</div>
+
+  <fieldset>
+    <legend>连接</legend>
+
+    <label class="field" for="rpcUrl">JSON-RPC 地址</label>
+    <input type="text" id="rpcUrl" spellcheck="false">
+    <div class="hint">例如 http://127.0.0.1:6800/jsonrpc。换主机/端口时，manifest.json 的 host_permissions 也要同步加一条。</div>
+
+    <label class="field" for="secret">RPC secret（对应 aria2.conf 的 rpc-secret）</label>
+    <input type="password" id="secret" spellcheck="false">
+    <div class="hint">首次安装后必须填这里才能用（除非你的 aria2 没设 <code>rpc-secret</code>）。填完点下面的「测试连接」验证。</div>
+  </fieldset>
+
+  <fieldset>
+    <legend>下载</legend>
+
+    <label class="field" for="dir">下载目录</label>
+    <input type="text" id="dir" spellcheck="false" placeholder="留空 = 用 aria2.conf 里的 dir">
+    <div class="hint">留空即可，交给 aria2 自己的 <code>dir=</code> 决定；填了会覆盖它（每个任务单独生效）。</div>
+
+    <div class="checks">
+      <label><input type="checkbox" id="captureEnabled"> 接管浏览器下载</label>
+      <label><input type="checkbox" id="notify"> 显示系统通知</label>
+      <label><input type="checkbox" id="addReferer"> 转发 Referer</label>
+      <label><input type="checkbox" id="addCookies"> 转发 Cookie（需登录的站点）</label>
+    </div>
+
+    <label class="field" for="minSizeMiB">最小文件大小（MiB）</label>
+    <input type="number" id="minSizeMiB" min="0" step="1">
+    <div class="hint">0 = 不过滤。注意：下载刚开始时体积常常未知，小文件可能仍会被接管。</div>
+  </fieldset>
+
+  <fieldset>
+    <legend>排除规则（这些交给 Firefox 自己下）</legend>
+
+    <label class="field" for="excludeSites">排除站点（一行一个，按主机名包含匹配）</label>
+    <textarea id="excludeSites" spellcheck="false" placeholder="microsoft.com&#10;google.com"></textarea>
+
+    <label class="field" for="excludeExts">排除后缀（一行一个）</label>
+    <textarea id="excludeExts" spellcheck="false" placeholder="pdf&#10;zip"></textarea>
+  </fieldset>
+
+  <div class="buttons">
+    <button id="save">保存</button>
+    <button id="test">测试连接</button>
+    <span id="status"></span>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
