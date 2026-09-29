@@ -97,6 +97,13 @@ build.sh    # 仅打包成 xpi（不含任何代码生成/压缩）
 - **风险自负**：本扩展会接管浏览器下载并把 URL 连同 Referer/Cookie 发给你自己配置的 aria2 RPC 地址。
   如不放心，可先在 `about:debugging` 里临时载入试跑，或用完即移除。
 
+## 反馈
+
+问题、建议或复现信息请开 issue：<https://github.com/bliu233/aria2-bridge/issues>
+
+如果你也遇到"官方 Aria2 Integration 的后台脚本不生效"，欢迎在 issue 里附上 Firefox 版本、扩展版本，
+以及 `about:debugging` 里后台页控制台的输出，方便对齐现象。
+
 ## 许可
 
 MIT，见 [LICENSE](LICENSE)。
