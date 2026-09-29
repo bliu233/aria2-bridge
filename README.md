@@ -59,6 +59,21 @@
 - 接管成功时会 `cancel` → `removeFile` → `erase`，即**Firefox 下载列表里那条会消失**，文件由 aria2 下到 `dir`
 - 右键菜单「用 Aria2 下载」对链接和选中文本都可用（选中多行 URL 会逐条添加）
 
+## 权限说明
+
+| 权限 | 用途 |
+|---|---|
+| `downloads` | 核心：监听新下载、取出文件名与来源；接管成功后取消并移除 Firefox 的下载项 |
+| `cookies` | 把目标 URL 的 Cookie 转发给 aria2，需登录的站点才能下载（设置页可关） |
+| `contextMenus` | 提供右键菜单「用 Aria2 下载」 |
+| `notifications` | 成功/失败提示（设置页可关） |
+| `storage` | 保存设置项 |
+| `activeTab` | 右键点击时读取当前标签地址，用作 Referer |
+| `host_permissions` | **只声明** `http://127.0.0.1:6800/*` 与 `http://localhost:6800/*`：扩展只允许访问本机的 aria2 RPC，不请求任何其它地址 |
+
+扩展**不收集任何数据、不连接任何第三方服务器**：URL、Referer、Cookie 只会发给你自己在设置页配置的 aria2 RPC 地址。
+（换用局域网内的 aria2 时，需要把该地址加进 `manifest.json` 的 `host_permissions`。）
+
 ## 已知限制
 
 - **不支持 Firefox for Android**：`downloads` API 自 Firefox for Android 79 起已被移除，本扩展的核心功能在安卓上不存在
