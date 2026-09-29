@@ -1,7 +1,11 @@
 # Aria2 Bridge
 
 把 Firefox 的下载交给本机（或局域网内）的 **aria2**，通过 aria2 的 JSON-RPC 接口添加任务。
-纯手写明文代码，**没有构建步骤**（`build.sh` 只是把文件打包成 xpi，不做任何代码生成/压缩）。
+
+> **AI 辅助开发（AI coding）**：本项目代码由 **AI 编程助手**生成与协助编写，作者负责需求、取舍、审阅、测试与真机验证。
+> 交付物是明文、未压缩、无构建步骤的源码（4 个文件约 480 行），便于逐行审阅。
+
+纯源码交付，**没有构建步骤**（`build.sh` 只是把文件打包成 xpi，不做任何代码生成/压缩）。
 
 ## 为什么会有这个
 
@@ -66,6 +70,17 @@
 manifest.json   background.js   options.html   options.js   LICENSE
 build.sh    # 仅打包成 xpi（不含任何代码生成/压缩）
 ```
+
+## AI 辅助开发声明
+
+- **代码来源**：`manifest.json`、`background.js`、`options.html`、`options.js` 均由 **AI 编程助手**生成与协助编写；
+  需求、设计取舍、测试方案与验收由作者提出并拍板。
+- **人工验证**：全部功能都在真机验证过（Firefox 153.3.0 + aria2 1.37.0，Linux）；关键路径另用 Node 桩测试覆盖
+  （RPC 报文、排除规则 6 个用例、快捷键切换、无 secret 时不带 token 参数）。
+- **可审阅性**：扩展本体 4 个文件、约 480 行明文 JavaScript/HTML/JSON，**无压缩、无打包、无第三方依赖**，
+  因此 AMO 签名时无需提交源码包；安装前可以直接把这几个文件读完。
+- **风险自负**：本扩展会接管浏览器下载并把 URL 连同 Referer/Cookie 发给你自己配置的 aria2 RPC 地址。
+  如不放心，可先在 `about:debugging` 里临时载入试跑，或用完即移除。
 
 ## 许可
 
