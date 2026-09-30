@@ -30,6 +30,15 @@
 3. 上传 xpi，等自动签名（通常几分钟），下载签名后的 xpi 正常安装即可（可长期保留、可更新）
 4. 以后改动：**版本号 +1** 后重新打包上传；同一个 `browser_specific_settings.gecko.id` + 更高版本号 = 一次升级
 
+### C. 自动更新
+
+`manifest.json` 里声明了 `update_url`，指向本仓库的 [`updates.json`](updates.json)：
+
+- **1.9 及以后**的版本装好后，Firefox 会自己检查更新（`about:addons` → ⚙ → **检查更新** 可手动触发）；
+  1.8 及更早没有这个字段，需要手动装一次完成迁移
+- 每条更新指向 GitHub Release 里那个**已签名**的 xpi，因此发布时要按 [`RELEASING.md`](RELEASING.md) 的顺序走一遍
+- 自建分发（unlisted）默认**不会**由 AMO 自动更新，这就是为什么要自己托管 `updates.json`
+
 ## 首次配置（重要）
 
 令牌不写在代码里（避免进仓库/进包），所以**装完必须填一次**：
