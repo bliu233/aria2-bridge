@@ -118,14 +118,52 @@ function shouldCapture(item) {
 
 /* ------------------------------------------------------------------ 交给 aria2 */
 
-async function cookieHeader(url, storeId) {
+/*
+ * 取某个 URL 的 cookie。原则：尽量拿到；拿不到就返回空串，绝不让它影响抓取本身。
+ *
+ * 三种取法合并去重：
+ *  1) 常规（不传 firstPartyDomain）—— FPI 关闭时最省事；
+ *  2) 显式传 firstPartyDomain: null —— FPI（privacy.firstparty.isolate=true）打开时，
+ *     cookies.getAll 不带这个键会直接抛 "First-Party Isolation is enabled, but the required
+ *     'firstPartyDomain' attribute was not set."；按 Firefox schema 的说明，显式传 null/undefined
+ *     表示"不按第一方域过滤"，而且只要这个键存在就会跳过该校验；
+ *  3) 带 partitionKey.topLevelSite = referrer 的 origin —— dFPI（默认的总 Cookie 保护）会把第三方
+ *     cookie 按 top-level site 分区，这样能一并取到。
+ */
+async function getAllCookies(url, storeId, referer) {
+  const base = storeId ? { url: url, storeId: storeId } : { url: url };
+  const queries = [base, Object.assign({}, base, { firstPartyDomain: null })];
+
   try {
-    const query = storeId ? { url: url, storeId: storeId } : { url: url };
-    const cookies = await browser.cookies.getAll(query);
-    return cookies.map(function (c) { return c.name + "=" + c.value; }).join("; ");
+    if (referer && /^https?:/i.test(referer)) {
+      queries.push(Object.assign({}, base, { partitionKey: { topLevelSite: new URL(referer).origin } }));
+    }
   } catch (e) {
-    return "";
+    // referer 不是合法 URL，跳过这一种取法
   }
+
+  const seen = {};
+  const out = [];
+  for (const query of queries) {
+    try {
+      const list = await browser.cookies.getAll(query);
+      for (const c of list) {
+        const key = c.name + "|" + c.value + "|" + c.domain + "|" + c.path;
+        if (!seen[key]) {
+          seen[key] = true;
+          out.push(c);
+        }
+      }
+    } catch (e) {
+      console.debug("[bridge] cookies.getAll 的一种取法失败（继续试其它）:", e && e.message);
+    }
+  }
+  return out;
+}
+
+async function cookieHeader(url, storeId, referer) {
+  const cookies = await getAllCookies(url, storeId, referer);
+  return cookies.map(function (c) { return c.name + "=" + c.value; }).join("; ");
 }
 
 async function buildOptions(item, referer, storeId) {
@@ -137,7 +175,7 @@ async function buildOptions(item, referer, storeId) {
   const headers = [];
   if (cfg.addReferer && referer) headers.push("Referer: " + referer);
   if (cfg.addCookies) {
-    const cookies = await cookieHeader(item.url, storeId);
+    const cookies = await cookieHeader(item.url, storeId, referer);
     if (cookies) headers.push("Cookie: " + cookies);
   }
   if (headers.length > 0) options.header = headers;

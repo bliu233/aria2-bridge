@@ -58,6 +58,10 @@
 - 只处理 `http:` / `https:`；`blob:` / `data:` / `file:` 一律放行给 Firefox（aria2 下不了这些）
 - 接管成功时会 `cancel` → `removeFile` → `erase`，即**Firefox 下载列表里那条会消失**，文件由 aria2 下到 `dir`
 - 右键菜单「用 Aria2 下载」对链接和选中文本都可用（选中多行 URL 会逐条添加）
+- **Cookie 取法自适应，且永不拖累抓取**：先按常规取一次；若开了 `privacy.firstparty.isolate`（FPI，此时不带
+  `firstPartyDomain` 的 `cookies.getAll` 会直接抛错），改用显式 `firstPartyDomain: null`（Firefox schema 规定的
+  "不按第一方域过滤"写法）再取一次；再按 referrer 的 top-level site 取一次 dFPI 分区 cookie。三种取法合并去重，
+  **任何一种失败都只是少带 Cookie，不会让抓取失效**。
 
 ## 权限说明
 

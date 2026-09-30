@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Aria2 Bridge",
-  "version": "1.7",
+  "version": "1.8",
   "description": "把 Firefox 的下载交给本机 aria2（JSON-RPC）：支持 cookie 转发、右键发送、排除规则和设置页。",
   "permissions": [
     "downloads",
